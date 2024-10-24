@@ -1,0 +1,26 @@
+{
+  "name": "maxcode",
+  "version": "0.2.3",
+  "description": "The evolution of Max Editor",
+  "main": "Main.js",
+  "scripts": {
+    "start": "electron .",
+    "build:sass": "sass ./app/styles/_global.scss ./app/styles/css/main.css",
+    "build:ts": "tsc ./app/types",
+    "build:dist": "electron-builder -wml"
+  },
+  "author": "Miguel V. Mesquita, Johnny M. F.",
+  "license": "MIT",
+  "dependencies": {
+    "@electron/remote": "^2.1.2",
+    "about-window": "^1.15.2",
+    "sass": "^1.80.4"
+  },
+  "devDependencies": {
+    "electron": "^33.0.2",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "org.dingus.maxcode"
+  }
+}

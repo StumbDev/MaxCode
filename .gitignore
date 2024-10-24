@@ -1,0 +1,5 @@
+/dist
+/app/types/*.js
+/app/styles/**/*.css
+/node_modules
+deno.lock
