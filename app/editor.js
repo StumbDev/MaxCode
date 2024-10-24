@@ -7,7 +7,7 @@ button.addEventListener("click", function() {
 
   const a = document.createElement('a');
   a.href = 'data:text/json;charset=utf-8,' + textarea.value;
-  a.download = 'newfile.ts';
+  a.download = 'untitled.ts';
   a.click();
 });
 

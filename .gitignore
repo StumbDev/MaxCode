@@ -3,3 +3,4 @@
 /app/styles/**/*.css
 /node_modules
 deno.lock
+/**/.DS_STORE
