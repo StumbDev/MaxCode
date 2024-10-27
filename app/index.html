@@ -1,40 +1,166 @@
 <!DOCTYPE html>
-<html>
-  <head>
+<html lang="en">
+<head>
     <meta charset="UTF-8">
-    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'">
-    <link href="./styles/css/main.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MaxCode</title>
-  </head>
-  <body>
-    <div class="sidenav">
-      <a href="#" class="button" id="save">Save</a>
-      <a href="#" class="active" id="new">New File</a>
-      <!--<a href="#">file</a>-->
-</div>
+    <style type="text/css" media="screen">
+        body {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        #editor {
+            flex: 1;
+            position: relative;
+            border: 1px solid #ccc;
+        }
+        .toolbar {
+            padding: 10px;
+            background-color: #202124;
+            border-bottom: 1px solid #ccc;
+        }
+        .toolbar button, .toolbar select {
+            margin-right: 5px;
+        }
 
-<div class="main">
-  <!--
+button {
+  appearance: none;
+  background-color: #2ea44f;
+  border: 1px solid rgba(27, 31, 35, .15);
+  border-radius: 6px;
+  box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
+  box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font-family: -apple-system,system-ui,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  padding: 6px 16px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: middle;
+  white-space: nowrap;
+}
 
-This piece of text would come by default upon opening MXEdit
-It's a sample HTML document.
+button:focus:not(:focus-visible):not(.focus-visible) {
+  box-shadow: none;
+  outline: none;
+}
 
-&#60;!DOCTYPE html&#62;
-&#60;html&#62;
-  &#60;head&#62;
-    &#60;title&#62;Hello World!&#60;/title&#62;
-  &#60;/head&#62;
-  &#60;body&#62;
-    &#60;h1&#62;This is a header!&#60;/h1&#62;
-    &#60;p&#62;This is a paragraph&#60;/p&#62;
-  &#60;/body&#62;
-&#60;/html&#62;
--->
-  <textarea id="file" placeholder="Welcome to Max Editor! Start typing to dismiss this message."></textarea>
-</div>
-   
+button:hover {
+  background-color: #2c974b;
+}
+
+button:focus {
+  box-shadow: rgba(46, 164, 79, .4) 0 0 0 3px;
+  outline: none;
+}
+
+button:disabled {
+  background-color: #94d3a2;
+  border-color: rgba(27, 31, 35, .1);
+  color: rgba(255, 255, 255, .8);
+  cursor: default;
+}
+
+button:active {
+  background-color: #298e46;
+  box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
+}
+    </style>
+</head>
+<body>
+
+    <div class="toolbar">
+        <select id="languageSelector">
+            <option value="typescript">TypeScript</option>
+            <option value="javascript">JavaScript</option>
+            <option value="python">Python</option>
+            <option value="java">Java</option>
+            <option value="html">HTML</option>
+            <option value="css">CSS</option>
+            <option value="c_cpp">C/C++</option>
+            <!-- Add more languages as needed -->
+        </select>
+        <button id="newFile">New</button>
+        <button id="saveFile">Save</button>
+        <button id="loadFile">Load</button>
+        <button id="clearEditor">Clear</button>
+        <button id="undo">Undo</button>
+        <button id="redo">Redo</button>
+        <button id="formatCode">Format</button>
+    </div>
+
+    <div id="editor">// Start coding here!</div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.36.3/ace.js" integrity="sha512-l13f2Dlet80LPHc8rVTtou5W/g57iXICo6ejbKXNyQeTIhFxb4STvoJSaV7kFK/tmrIRIN4caTlpH6lxondKJA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        var editor = ace.edit("editor");
+        editor.setTheme("ace/theme/monokai");
+        editor.session.setMode("ace/mode/typescript");
+
+        // Change language mode based on selection
+        document.getElementById('languageSelector').onchange = function() {
+            const selectedLanguage = this.value;
+            editor.session.setMode(`ace/mode/${selectedLanguage}`);
+        };
+
+        // File operations
+        document.getElementById('newFile').onclick = function() {
+            editor.setValue("// Start coding here!", -1);
+        };
+
+        document.getElementById('saveFile').onclick = function() {
+            const blob = new Blob([editor.getValue()], { type: 'text/plain' });
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = 'code.' + document.getElementById('languageSelector').value; // Default filename based on language
+            link.click();
+        };
+
+        document.getElementById('loadFile').onclick = function() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.ts,.js,.py,.java,.html,.css,.cpp'; // Accept multiple file types
+            input.onchange = e => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    editor.setValue(event.target.result, -1);
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        };
+
+        document.getElementById('clearEditor').onclick = function() {
+            editor.setValue("", -1);
+        };
+
+        // Code editing operations
+        document.getElementById('undo').onclick = function() {
+            editor.undo();
+        };
+
+        document.getElementById('redo').onclick = function() {
+            editor.redo();
+        };
+
+        document.getElementById('formatCode').onclick = function() {
+            let code = editor.getValue();
+            code = code.replace(/\s+/g, ' ').trim();
+            editor.setValue(code, -1);
+        };
+    </script>
+
 </body>
-    <script src="./editor.js"></script>
-  </body>
 </html>
